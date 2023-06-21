@@ -4,12 +4,13 @@ import Header from '../component/Header';
 import Button from '../component/Button';
 import { useContext } from 'react';
 import { DiaryDispatchContext } from '../App';
+import Editor from '../component/Editor';
 
 const Edit = () => {
   const { id } = useParams();
   const data = useDiary(id);
   const navigate = useNavigate();
-  const { onDelete } = useContext(DiaryDispatchContext);
+  const { onUpdate, onDelete } = useContext(DiaryDispatchContext);
   const onClickDelete = () => {
     if (
       window.confirm('일기는 영구삭제됩니다. 일기를 정말 삭제하시겠습니까?')
@@ -23,6 +24,13 @@ const Edit = () => {
     navigate(-1);
   };
 
+  const onSubmit = (data) => {
+    if (window.confirm('일기를 정말 수정할까요?')) {
+      const { date, content, emotionId } = data;
+      onUpdate(id, date, content, emotionId);
+      navigate('/', { replace: true });
+    }
+  };
   if (!data) {
     return <div>일기를 불러오고 있습니다..</div>;
   } else {
@@ -39,6 +47,7 @@ const Edit = () => {
             />
           }
         />
+        <Editor initData={data} onSubmit={onSubmit} />
       </div>
     );
   }
