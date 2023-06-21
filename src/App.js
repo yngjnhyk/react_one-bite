@@ -9,15 +9,22 @@ import React, { useReducer, useRef, useEffect, useState } from 'react';
 function reducer(state, action) {
   switch (action.type) {
     case 'CREATE': {
+      const newState = [action.data, ...state];
+      localStorage.setItem('diary', JSON.stringify(newState));
       return [action.data, ...state];
     }
     case 'UPDATE': {
-      return state.map((it) =>
+      const newState = state.map((it) =>
         String(it.id) === String(action.data.id) ? { ...action.data } : it
       );
+      localStorage.setItem('diary', JSON.stringify(newState));
+      return newState;
     }
     case 'DELETE': {
-      return state.filter((it) => String(it.id) !== String(action.targetId));
+      const newState = state.filter(
+        (it) => String(it.id) !== String(action.targetId)
+      );
+      return newState;
     }
     case 'INIT': {
       return action.data;
@@ -57,10 +64,19 @@ function App() {
   const idRef = useRef(0);
 
   useEffect(() => {
-    dispatch({
-      type: 'INIT',
-      data: mockData,
-    });
+    const rawData = localStorage.getItem('diary');
+    if (!rawData) {
+      setIsDataLoded(true);
+      return;
+    }
+    const localData = JSON.parse(rawData);
+    if (localData.length === 0) {
+      setIsDataLoded(true);
+      return;
+    }
+    localData.sort((a, b) => Number(b.id) - Number(a.id));
+    idRef.current = localData[0].id + 1;
+    dispatch({ type: 'INIT', data: localData });
     setIsDataLoded(true);
   }, []);
   const onCreate = (date, content, emotionId) => {
