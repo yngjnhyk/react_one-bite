@@ -6,15 +6,15 @@ import { useContext } from 'react';
 import { DiaryDispatchContext } from '../App';
 
 const New = () => {
-  const onSubmit = (data) => {
-    const { date, content, emotionId } = data;
-    onCreate(date, content, emotionId);
-    navigate('/', { replace: true });
-  };
   const { onCreate } = useContext(DiaryDispatchContext);
   const navigate = useNavigate();
   const goBack = () => {
     navigate(-1);
+  };
+  const onSubmit = (data) => {
+    const { date, content, emotionId } = data;
+    onCreate(date, content, emotionId);
+    navigate('/', { replace: true });
   };
   return (
     <div>
